@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Utils;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+class ResponseUtil
+{
+    public function success($results = null, string $message = null, int $statusCode = 200): JsonResponse
+    {
+        return $this->createResponse('success', $statusCode, $message, $results);
+    }
+
+    public function error(array $errors = [], string $message = null, int $statusCode = 400): JsonResponse
+    {
+        return $this->createResponse('error', $statusCode, $message, null, $errors);
+    }
+
+    private function createResponse(string $status, int $statusCode, string $message = null, $results = null, array $errors = []): JsonResponse
+    {
+        $responseData = [
+            'status' => $status,
+            'code' => $statusCode,
+        ];
+
+        if ($message !== null) {
+            $responseData['message'] = $message;
+        }
+
+        if (isset($results['data'])) {
+            $responseData['data'] = $results['data'];
+        }
+
+        if (isset($results['meta'])) {
+            $responseData['meta'] = $results['meta'];
+        }
+
+        if (!empty($errors)) {
+            $responseData['errors'] = $errors;
+        }
+
+        return new JsonResponse($responseData, $statusCode);
+    }
+}
