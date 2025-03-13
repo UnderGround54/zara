@@ -2,47 +2,86 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use App\DataPersister\PurchaseHistoryDataPersister;
+use App\Dto\PurchaseHistoryRequestDto;
+use App\Dto\PurchaseHistoryResponseDto;
+use App\Provider\PaginationDataProvider;
 use App\Repository\PurchaseHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PurchaseHistoryRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/histories',
+            paginationEnabled: true,
+            paginationItemsPerPage: 10,
+            normalizationContext: ['groups' => ['list:read']],
+            provider: PaginationDataProvider::class,
+        ),
+        new Post(
+            uriTemplate: 'histories/notif-payment',
+            input: PurchaseHistoryRequestDto::class,
+            output: PurchaseHistoryResponseDto::class,
+            write: true,
+            processor: PurchaseHistoryDataPersister::class,
+        ),
+    ],
+)]
+#[ApiFilter(SearchFilter::class, properties: ['MSISDN' => 'ipartial', 'Nom' => 'ipartial'])]
 class PurchaseHistory
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['list:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 15)]
+    #[Groups(['list:read'])]
     private ?string $MSISDN = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list:read'])]
     private ?string $IDBillS3 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['list:read'])]
     private ?string $IDPayment = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['list:read'])]
     private ?string $CIN = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list:read'])]
     private ?string $SelectedDeviceID = null;
 
     #[ORM\Column]
+    #[Groups(['list:read'])]
     private ?float $DiscountRate = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list:read'])]
     private ?string $IMEI = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['list:read'])]
     private ?string $PaymentAmount = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['list:read'])]
     private ?\DateTimeImmutable $PaymentDate = null;
 
-    #[ORM\ManyToOne(inversedBy: 'purchaseHistories')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?DeviceType $SelectedDeviceType = null;
+    #[ORM\Column(nullable: true)]
+    #[Groups(['list:read'])]
+    private ?string $SelectedDeviceType = null;
 
     public function getId(): ?int
     {
@@ -157,12 +196,12 @@ class PurchaseHistory
         return $this;
     }
 
-    public function getSelectedDeviceType(): ?DeviceType
+    public function getSelectedDeviceType(): ?string
     {
         return $this->SelectedDeviceType;
     }
 
-    public function setSelectedDeviceType(?DeviceType $SelectedDeviceType): static
+    public function setSelectedDeviceType(?string $SelectedDeviceType): static
     {
         $this->SelectedDeviceType = $SelectedDeviceType;
 

@@ -20,19 +20,15 @@ class ResponseUtil
     {
         $responseData = [
             'status' => $status,
-            'code' => $statusCode,
+            'code'   => $statusCode,
         ];
 
         if ($message !== null) {
             $responseData['message'] = $message;
         }
 
-        if (isset($results['data'])) {
-            $responseData['data'] = $results['data'];
-        }
-
-        if (isset($results['meta'])) {
-            $responseData['meta'] = $results['meta'];
+        if ($results !== null) {
+            $responseData['data'] = $results;
         }
 
         if (!empty($errors)) {
