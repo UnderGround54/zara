@@ -10,6 +10,7 @@ api_platform:
         enabled: true
     formats:
         json: ['application/json']
+        csv: ['text/csv']
     title: project zara
     version: 1.0.0
     defaults:

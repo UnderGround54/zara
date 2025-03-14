@@ -5,15 +5,18 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\MediaType;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\RequestBody;
+use ApiPlatform\OpenApi\Model\Response;
 use App\Controller\EligibilityCheckController;
 use App\Controller\ImportCsvController;
 use App\Dto\EligibilityRequestDto;
 use App\Dto\EligibilityResponseDto;
+use App\Provider\ExportEligibilityCsvProvider;
 use App\Provider\PaginationDataProvider;
 use App\Repository\EligibilityRepository;
 use ArrayObject;
@@ -60,6 +63,27 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
                     ])
                 )
             )
+        ),
+        new Get(
+            uriTemplate: '/eligibles/export-csv',
+            outputFormats: ['csv' => 'text/csv'],
+            openapi: new Operation(
+                responses: [
+                    '200' => new Response(
+                        description: 'Fichier CSV généré avec succès',
+                        content: new ArrayObject([
+                            'text/csv' => new MediaType(
+                                schema: new ArrayObject([
+                                    'type' => 'string',
+                                    'format' => 'binary',
+                                ])
+                            ),
+                        ])
+                    )
+                ],
+                summary: 'Export des données Eligibility en CSV'
+            ),
+            provider: ExportEligibilityCsvProvider::class
         )
     ],
 )]

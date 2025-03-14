@@ -3,7 +3,6 @@
 
 namespace App\Utils;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidateData

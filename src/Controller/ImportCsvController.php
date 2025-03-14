@@ -21,7 +21,7 @@ class ImportCsvController extends AbstractController
     public function __construct(
         private readonly EligibilityImportService $importService,
         private readonly ValidateData $validateData,
-        private readonly ResponseUtil     $responseUtil,
+        private readonly ResponseUtil $responseUtil,
     ) {}
 
     /**
@@ -34,7 +34,7 @@ class ImportCsvController extends AbstractController
         $uploadedFile = $request->files->get('file');
 
         if (!$uploadedFile) {
-            return new JsonResponse(['error' => 'Aucun fichier fourni.'], Response::HTTP_BAD_REQUEST);
+            return $this->responseUtil->error([], "Aucun fichier fourni.");
         }
 
         $uploadedFileDto = new FileUploadDto($uploadedFile);
