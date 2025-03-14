@@ -43,8 +43,8 @@ class ImportCsvController extends AbstractController
         if (!$validated instanceof FileUploadDto) {
             return $validated;
         }
-        $this->importService->importCsv($uploadedFile->getPathname());
+        $errors = $this->importService->importCsv($uploadedFile->getPathname());
 
-        return $this->responseUtil->success('','Import terminé',Response::HTTP_CREATED);
+        return $this->responseUtil->success($errors,'Import terminé',Response::HTTP_CREATED);
     }
 }

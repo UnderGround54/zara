@@ -107,14 +107,14 @@ class KernelEventSubscriber implements EventSubscriberInterface
         if (str_contains($route, 'verif-eligible') || str_contains($route, 'notif-payment')) {
             $this->apiLogger->info("Contrôleur API exécuté", [
                 'controller' => $controllerName,
-                'method' => $methodName,
-                'username' => $username,
+                'method'     => $methodName,
+                'username'    => $username,
             ]);
         } else {
             $this->userLogger->info("Contrôleur exécuté", [
                 'controller' => $controllerName,
-                'method' => $methodName,
-                'username' => $username,
+                'method'     => $methodName,
+                'username'   => $username,
             ]);
         }
     }
@@ -136,7 +136,8 @@ class KernelEventSubscriber implements EventSubscriberInterface
             if ($status === 200) {
                 $this->userLogger->info('Connexion réussie', [
                     'username' => $username,
-                    'ip' => $request->getClientIp(),
+                    'ip'       => $request->getClientIp(),
+                    'status'   => $status,
                 ]);
             } else {
                 $this->userLogger->warning('Échec de connexion', [
@@ -147,30 +148,54 @@ class KernelEventSubscriber implements EventSubscriberInterface
             }
         }
 
-        if (str_contains($route, 'verif-eligible') || str_contains($route, 'notif-payment')) {
+        if (str_contains($route, 'verif-eligible') || str_contains($route, 'notif-payment') && $user) {
             $this->apiLogger->info('Réponse API envoyée', [
                 'status_code' => $status,
                 'username' => $username,
                 'ip' => $ip,
             ]);
-        } elseif (str_contains($route, 'import')) {
-            $this->importLogger->info('Importation terminée', [
-                'status_code' => $status,
-                'username' => $username,
-                'ip'   => $ip,
-            ]);
-        } elseif (str_contains($route, 'export')) {
-            $this->exportLogger->info('Exportation terminée', [
-                'status_code' => $status,
-                'username' => $username,
-                'ip'   => $ip,
-            ]);
+        } elseif (str_contains($route, 'import') && $user) {
+            if ($status >= 400) {
+                $this->importLogger->error('Importation échouée', [
+                    'status_code' => $status,
+                    'username' => $username,
+                    'ip'   => $ip,
+                ]);
+            } else {
+                $this->importLogger->info('Importation terminée', [
+                    'status_code' => $status,
+                    'username' => $username,
+                    'ip'   => $ip,
+                ]);
+            }
+        } elseif (str_contains($route, 'export') && $user) {
+            if ($status >= 400) {
+                $this->importLogger->error('Exportation échouée', [
+                    'status_code' => $status,
+                    'username' => $username,
+                    'ip'   => $ip,
+                ]);
+            } else {
+                $this->importLogger->info('Exportation terminée', [
+                    'status_code' => $status,
+                    'username'    => $username,
+                    'ip'          => $ip,
+                ]);
+            }
         } else {
-            $this->userLogger->info('Réponse utilisateur envoyée', [
-                'status_code' => $status,
-                'username' => $username,
-                'ip'   => $ip,
-            ]);
+            if ($status >= 400) {
+                $this->importLogger->error('Réponse utilisateur envoyée', [
+                    'status_code' => $status,
+                    'username' => $username,
+                    'ip'   => $ip,
+                ]);
+            } else {
+                $this->importLogger->info('Réponse utilisateur envoyée', [
+                    'status_code' => $status,
+                    'username'    => $username,
+                    'ip'          => $ip,
+                ]);
+            }
         }
     }
 

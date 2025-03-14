@@ -1,35 +1,82 @@
 <?php
 namespace App\Dto;
 
-readonly class EligibilityImportDto
+use Symfony\Component\Validator\Constraints as Assert;
+
+class EligibilityImportDto
 {
-    final public function __construct(
-        public string $MSISDN,
+    #[Assert\NotBlank(message: "Le MSISDN est requis.")]
+    public string $MSISDN;
 
-        public string $Nom,
+    #[Assert\NotBlank(message: "Le nom est requis.")]
+    public string $Nom;
 
-        public string $Prenom,
+    #[Assert\NotBlank(message: "Le prénom est requis.")]
+    public string $Prenom;
 
-        public float $ARPU,
+    #[Assert\NotBlank(message: "L'ARPU est requis.")]
+    #[Assert\Type(type: 'float', message: "L'ARPU doit être un nombre.")]
+    public float $ARPU;
 
-        public bool $IsSmartphone,
+    #[Assert\NotNull(message: "Le statut du smartphone est requis.")]
+    public bool $IsSmartphone;
 
-        public string $EligibleDevice,
+    #[Assert\NotBlank(message: "L'appareil éligible est requis.")]
+    public string $EligibleDevice;
 
-        public string $CurrentNetwork,
+    #[Assert\NotBlank(message: "Le réseau actuel est requis.")]
+    public string $CurrentNetwork;
 
-        public string $DataActivity,
+    #[Assert\NotBlank(message: "L'activité des données est requise.")]
+    public string $DataActivity;
 
-        public int $DiscountRate,
+    #[Assert\NotBlank(message: "Le taux de réduction est requis.")]
+    #[Assert\Type(type: 'integer', message: "Le taux de réduction doit être un entier.")]
+    public int $DiscountRate;
 
-        public bool $IsOldSim,
+    #[Assert\NotNull(message: "L'ancienneté de la carte SIM est requise.")]
+    public bool $IsOldSim;
 
-        public bool $IsPurchase,
+    #[Assert\NotNull(message: "L'état d'achat est requis.")]
+    public bool $IsPurchase;
 
-        public \DateTimeImmutable $CreatedAt,
+    #[Assert\NotBlank(message: "La date de création est requise.")]
+    #[Assert\Type(type: '\DateTimeImmutable', message: "Le format de la date de création est invalide.")]
+    public \DateTimeImmutable $CreatedAt;
 
-        public \DateTimeImmutable $ImportedAt,
+    public \DateTimeImmutable $ImportedAt;
 
-        public ?string $CIN = null,
-    ) {}
+    public ?string $CIN;
+
+    public function __construct(
+        string $MSISDN,
+        string $Nom,
+        string $Prenom,
+        float $ARPU,
+        bool $IsSmartphone,
+        string $EligibleDevice,
+        string $CurrentNetwork,
+        string $DataActivity,
+        int $DiscountRate,
+        bool $IsOldSim,
+        bool $IsPurchase,
+        \DateTimeImmutable $CreatedAt,
+        \DateTimeImmutable $ImportedAt,
+        ?string $CIN = null
+    ) {
+        $this->MSISDN = $MSISDN;
+        $this->Nom = $Nom;
+        $this->Prenom = $Prenom;
+        $this->ARPU = $ARPU;
+        $this->IsSmartphone = $IsSmartphone;
+        $this->EligibleDevice = $EligibleDevice;
+        $this->CurrentNetwork = $CurrentNetwork;
+        $this->DataActivity = $DataActivity;
+        $this->DiscountRate = $DiscountRate;
+        $this->IsOldSim = $IsOldSim;
+        $this->IsPurchase = $IsPurchase;
+        $this->CreatedAt = $CreatedAt;
+        $this->ImportedAt = $ImportedAt;
+        $this->CIN = $CIN;
+    }
 }

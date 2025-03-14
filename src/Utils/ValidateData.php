@@ -20,8 +20,17 @@ class ValidateData
     {
         $errors = $this->validator->validate($dto);
 
-        return $errors->count() > 0
-            ? $this->responseUtil->error((array)$errors, $errors->get(0)->getMessage())
-            : $dto;
+        if ($errors->count() > 0) {
+            $errorMessages = [];
+
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+
+            return $this->responseUtil->error($errorMessages, "Validation failed");
+        }
+
+        return $dto;
     }
+
 }
