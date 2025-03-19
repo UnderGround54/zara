@@ -1,0 +1,3 @@
+access_right:
+    user_class: App\Entity\User
+    right_class: App\Entity\Right

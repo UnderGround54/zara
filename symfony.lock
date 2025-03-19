@@ -1,4 +1,7 @@
 {
+    "amy/access-right-bundle": {
+        "version": "1.4.0"
+    },
     "api-platform/core": {
         "version": "4.1",
         "recipe": {

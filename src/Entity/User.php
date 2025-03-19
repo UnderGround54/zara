@@ -1,10 +1,14 @@
 <?php
 
 namespace App\Entity;
+use Amy\AccessRightBundle\Interface\IdentifierInterface;
+use Amy\AccessRightBundle\Interface\RightRelationInterface;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Provider\PaginationDataProvider;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -23,7 +27,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
         )
     ],
 )]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, RightRelationInterface, IdentifierInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -60,9 +64,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $enabled = null;
 
+    /**
+     * @var Collection<int, Profil>
+     */
+    #[ORM\ManyToMany(targetEntity: Profil::class, inversedBy: 'users')]
+    private Collection $profils;
+
+    /**
+     * @var Collection<int, Right>
+     */
+    #[ORM\ManyToMany(targetEntity: Right::class, inversedBy: 'users')]
+    private Collection $rights;
+
     public function __construct()
     {
+        $this->profils = new ArrayCollection();
+        $this->rights = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -245,5 +264,53 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @return Collection<int, Profil>
+     */
+    public function getProfils(): Collection
+    {
+        return $this->profils;
+    }
+
+    public function addProfil(Profil $profil): static
+    {
+        if (!$this->profils->contains($profil)) {
+            $this->profils->add($profil);
+        }
+
+        return $this;
+    }
+
+    public function removeProfil(Profil $profil): static
+    {
+        $this->profils->removeElement($profil);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Right>
+     */
+    public function getRights(): Collection
+    {
+        return $this->rights;
+    }
+
+    public function addRight(Right $right): static
+    {
+        if (!$this->rights->contains($right)) {
+            $this->rights->add($right);
+        }
+
+        return $this;
+    }
+
+    public function removeRight(Right $right): static
+    {
+        $this->rights->removeElement($right);
+
+        return $this;
     }
 }
